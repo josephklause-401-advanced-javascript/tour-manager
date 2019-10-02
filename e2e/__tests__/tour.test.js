@@ -138,8 +138,41 @@ describe('tour api', () => {
             .delete(`/api/tours/${tour._id}/stops/${body[0]._id}`)
             .expect(200);
         })
-        .then(({ body })=> {
+        .then(({ body }) => {
           expect(body.length).toBe(0);
+        });
+    });
+  });
+
+  it('updates attendance in stop', () => {
+    return postTour(tour).then(tour => {
+      return request
+        .post(`/api/tours/${tour._id}/stops`)
+        .send(location)
+        .expect(200)
+        .then(({ body }) => {
+          return request
+            .put(`/api/tours/${tour._id}/stops/${body[0]._id}/attendance`)
+            .send('12')
+            .expect(200);
+        })
+        .then(({ body }) => {
+          expect(body).toMatchInlineSnapshot(`
+            Array [
+              Object {
+                "_id": "5d93f9c69eff51536175b25d",
+                "address": 97215,
+                "attendance": Object {},
+                "location": Object {
+                  "latitude": 45.5266975,
+                  "longitude": -122.6880503,
+                },
+                "weather": Object {
+                  "forecast": "unhappy",
+                },
+              },
+            ]
+          `);
         });
     });
   });
