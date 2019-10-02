@@ -26,6 +26,10 @@ const tour = {
   launchDate: new Date()
 };
 
+const attendance = {
+  attendance: 12
+};
+
 function postTour(tour) {
   return request
     .post('/api/tours')
@@ -105,7 +109,7 @@ describe('tour api', () => {
         .send(location)
         .expect(200)
         .then(({ body }) => {
-          expect(body[0]).toMatchInlineSnapshot(
+          expect(body.stops[0]).toMatchInlineSnapshot(
             {
               _id: expect.any(String)
             },
@@ -135,7 +139,7 @@ describe('tour api', () => {
         .expect(200)
         .then(({ body }) => {
           return request
-            .delete(`/api/tours/${tour._id}/stops/${body[0]._id}`)
+            .delete(`/api/tours/${tour._id}/stops/${body.stops[0]._id}`)
             .expect(200);
         })
         .then(({ body }) => {
@@ -152,27 +156,30 @@ describe('tour api', () => {
         .expect(200)
         .then(({ body }) => {
           return request
-            .put(`/api/tours/${tour._id}/stops/${body[0]._id}/attendance`)
-            .send('12')
+            .put(`/api/tours/${body._id}/stops/${body.stops[0]._id}/attendance`)
+            .send(attendance)
             .expect(200);
         })
         .then(({ body }) => {
-          expect(body).toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "_id": "5d93f9c69eff51536175b25d",
-                "address": 97215,
-                "attendance": Object {},
-                "location": Object {
-                  "latitude": 45.5266975,
-                  "longitude": -122.6880503,
-                },
-                "weather": Object {
-                  "forecast": "unhappy",
-                },
+          expect(body[0]).toMatchInlineSnapshot(
+            {
+              _id: expect.any(String)
+            },
+            `
+            Object {
+              "_id": Any<String>,
+              "address": 97215,
+              "attendance": 12,
+              "location": Object {
+                "latitude": 45.5266975,
+                "longitude": -122.6880503,
               },
-            ]
-          `);
+              "weather": Object {
+                "forecast": "unhappy",
+              },
+            }
+          `
+          );
         });
     });
   });
