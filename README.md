@@ -5,9 +5,9 @@
 ### Author: Joseph Klause
 
 ### Links and Resources
-* [submission PR](http://xyz.com)
-* [travis](http://xyz.com)
-* [back-end](http://xyz.com) (when applicable)
+* [submission PR](https://github.com/josephklause-401-advanced-javascript/tour-manager/pull/1)
+* [travis](https://travis-ci.com/josephklause-401-advanced-javascript/tour-manager/builds/129959967)
+* [heroku-deploy](https://agile-waters-83733.herokuapp.com)
 
 
 #### Running the app
