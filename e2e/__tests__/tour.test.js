@@ -4,6 +4,7 @@ const request = require('../request');
 const db = require('../db');
 const getLocation = require('../../lib/services/maps-api');
 const getForecast = require('../../lib/services/weather-api');
+const { ObjectId } = require('mongoose').Types;
 
 getLocation.mockResolvedValue({
   latitude: 45.5266975,
@@ -15,7 +16,8 @@ getForecast.mockResolvedValue({
 });
 
 const location = {
-  address: 97215
+  address: 97215,
+  _id: new ObjectId()
 };
 
 const tour = {
@@ -98,26 +100,46 @@ describe('tour api', () => {
 
   it('adding a stop gets a geo location and weather', () => {
     return postTour(tour).then(tour => {
-      console.log(tour);
       return request
         .post(`/api/tours/${tour._id}/stops`)
         .send(location)
         .expect(200)
         .then(({ body }) => {
-          expect(body).toMatchInlineSnapshot(`
-            Array [
-              Object {
-                "address": 97215,
-                "location": Object {
-                  "latitude": 45.5266975,
-                  "longitude": -122.6880503,
-                },
-                "weather": Object {
-                  "forecast": "unhappy",
-                },
+          expect(body[0]).toMatchInlineSnapshot(
+            {
+              _id: expect.any(String)
+            },
+            `
+            Object {
+              "_id": Any<String>,
+              "address": 97215,
+              "location": Object {
+                "latitude": 45.5266975,
+                "longitude": -122.6880503,
               },
-            ]
-          `);
+              "weather": Object {
+                "forecast": "unhappy",
+              },
+            }
+          `
+          );
+        });
+    });
+  });
+
+  it('deletes a stop that got cancelled', () => {
+    return postTour(tour).then(tour => {
+      return request
+        .post(`/api/tours/${tour._id}/stops`)
+        .send(location)
+        .expect(200)
+        .then(({ body }) => {
+          return request
+            .delete(`/api/tours/${tour._id}/stops/${body[0]._id}`)
+            .expect(200);
+        })
+        .then(({ body })=> {
+          expect(body.length).toBe(0);
         });
     });
   });
